@@ -76,29 +76,12 @@
   $('#zoomClose').addEventListener('click', function () { dlg.close(); });
   dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
 
-  /* ---- tempahan ---- */
-  var form = $('#orderForm'), msg = $('#formMsg'), note = $('#contactNote');
-  var wa = String(S.whatsapp || '').replace(/\D/g, '');
-  var storeBtn = $('#storeBtn'), orderBtn = $('#orderBtn');
-  if (S.storeUrl) { storeBtn.hidden = false; storeBtn.href = S.storeUrl; }
-  if (!wa && !S.storeUrl) {
-    orderBtn.disabled = true; orderBtn.textContent = 'Tempahan akan dibuka tidak lama lagi';
-    orderBtn.style.opacity = .6; orderBtn.style.cursor = 'not-allowed';
+  /* ---- tempahan: Google Form (alamat boleh diubah dalam config.js) ---- */
+  var orderBtn = $('#orderBtn');
+  if (orderBtn && S.formUrl) orderBtn.href = S.formUrl;
+  var wa = String(S.whatsapp || '').replace(/\D/g, ''), note = $('#contactNote');
+  if (wa && note) {
+    note.hidden = false;
+    note.innerHTML = 'Ada masalah? <a href="https://wa.me/' + wa + '" target="_blank" rel="noopener">Hubungi penerbit</a>.';
   }
-  if (S.email) { note.innerHTML = 'Atau e-mel: <a href="mailto:' + encodeURI(S.email) + '">' + S.email.replace(/</g, '&lt;') + '</a>'; }
-  else if (wa) { note.textContent = 'Anda akan dibawa ke WhatsApp dengan mesej tempahan yang sudah disediakan.'; }
-
-  function showMsg(t) { msg.textContent = t; msg.hidden = !t; }
-  form.addEventListener('submit', function (e) {
-    e.preventDefault(); showMsg('');
-    var name = form.name.value.replace(/\s+/g, ' ').trim(), email = form.email.value.trim();
-    if (name.length < 2) { showMsg('Sila isi nama penuh anda.'); form.name.focus(); return; }
-    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)) { showMsg('Alamat e-mel tidak sah.'); form.email.focus(); return; }
-    if (!$('#fAgree').checked) { showMsg('Sila tandakan persetujuan syarat.'); return; }
-    if (!wa) { if (S.storeUrl) location.href = S.storeUrl; return; }
-    var text = 'Salam, saya ingin menempah e-buku *Modul Ziarah Taif* (RM' + Number(S.price || 19.9).toFixed(2) + ').\n\n' +
-      'Nama: ' + name + (email ? '\nE-mel: ' + email : '') +
-      '\n\nSaya faham PDF ini untuk kegunaan peribadi dan akan ditera dengan nama saya. Mohon maklumat pembayaran.';
-    window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
-  });
 })();
